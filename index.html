@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <div id="app">
+    <!-- 開始畫面 -->
+    <div class="mask" v-show="showStartView" v-cloak>
+      <div class="popups">
+        <div class="title">Memory Game</div>
+        <div class="mode-btns">
+          <div :class="mode === 'simple' ? 'actived' : ''" @click="initGame('simple')">Simple</div>
+          <div :class="mode === 'hard' ? 'actived' : ''" @click="initGame('hard')">Hard</div>
+        </div>
+        <div class="btn" @click="countdownBegins">Start</div>
+      </div>
+    </div>
+    <!-- 倒數畫面 -->
+    <div class="mask countdown-mask" v-show="showCountdownView" v-cloak>
+      {{ countdownSec }}
+    </div>
+    <!-- 卡片區塊 -->
+    <div :class="`cards-wrap-${mode}`" v-cloak>
+      <div v-for="(item, index) in showCardList" :key="index" class="card-wrap" @click="flipCard(item)">
+        <div class="card" :class="{'flipped': item.flipped, 'hide': item.cleared}">
+          <div class="front"></div>
+          <div class="back">{{ item.value }}</div>
+        </div>
+      </div>
+    </div>
+    <!-- 時間條 -->
+    <div class="timeBar">
+      <div class="time-left" :style="`width: ${timeLeft / totalSec * 100}%;`"></div>
+    </div>
+    <!-- 結束畫面 -->
+    <div class="mask" v-show="showEndView" v-cloak>
+      <div class="popups">
+        <div class="title">{{ gameResult === 'success' ? 'Success!' : 'Fail...' }}</div>
+        <div class="btn" @click="playAgain">Play Again</div>
+        <div class="btn" @click="back">Back</div>
+      </div>
+    </div>
+
+  </div>
+  <script src="https://unpkg.com/vue@next"></script>
+  <script>
+    const { createApp, ref } = Vue;
+    const vm = createApp({
+      data() {
+        return {
+          cardList: [{
+            value: '001',
+            img: ''
+          }, {
+            value: '002',
+            img: ''
+          }, {
+            value: '003',
+            img: ''
+          }, {
+            value: '004',
+            img: ''
+          }, {
+            value: '005',
+            img: ''
+          }, {
+            value: '006',
+            img: ''
+          }, {
+            value: '007',
+            img: ''
+          }, {
+            value: '008',
+            img: ''
+          }, {
+            value: '009',
+            img: ''
+          }, {
+            value: '010',
+            img: ''
+          }, {
+            value: '012',
+            img: ''
+          }, {
+            value: '012',
+            img: ''
+          }],
+          showCardList: [],
+          showStartView: true,
+          showCountdownView: false,
+          showEndView: false,
+          countdownSec: 5,
+          mode: 'simple',
+          cardTemp: [],
+          gameResult: '',
+          totalSec: 30,
+          timeLeft: 30,
+          timer: '',
+          canFlip: false
+        }
+      },
+      computed: {
+        clearedCount() {
+          let count = 0
+          this.showCardList.forEach((item) => {
+            if (item.cleared) count++
+          })
+          return count
+        }
+      },
+      created() {
+        this.initGame('simple');
+      },
+      mounted() {
+        this.resetViewHeight()
+        // 當螢幕尺寸產生變化時 重新取得vh
+        window.addEventListener('resize', this.resetViewHeight);
+      },
+      watch: {
+        cardTemp: {
+          handler: function(cards) {
+            if(cards.length === 2) {
+              if (cards[0].value === cards[1].value) {
+                setTimeout(() => {
+                  this.cardTemp.forEach((item) => item.cleared = true)
+                  this.cardTemp = []
+                }, 800)
+              } else {
+                setTimeout(() => {
+                  this.cardTemp.forEach((item) => item.flipped = false)
+                  this.cardTemp = []
+                }, 800)
+              }
+            }
+          },
+          deep: true
+        },
+        clearedCount(count) {
+          if ((this.mode === 'simple' && count === 16) || (this.mode === 'hard' && count === 24)) {
+            this.gameEnd('success')
+          }
+        },
+        timeLeft(sec) {
+          if (sec === -1) {
+            this.gameEnd('fail')
+          }
+        }
+      },
+      methods: {
+        /**
+         * 解決safari vh判定異常 - 用js取得瀏覽器高度後 填入CSS變數內
+         */
+        resetViewHeight() {
+          const vh = window.innerHeight * 0.01;
+          document.documentElement.style.setProperty('--vh', `${vh}px`);
+        },
+        /**
+         * 遊戲初始化
+         * @param {String} mode 遊戲模式：simple 簡單，hard 困難
+         */
+        initGame(mode) {
+          this.mode = mode
+          this.countdownSec = 5
+          this.timeLeft = 30
+          this.gameResult = ''
+          switch (mode) {
+            case 'simple':
+              this.showCardList = this.cardList.slice(0, 8).concat(this.cardList.slice(0, 8));
+              break;
+            case 'hard':
+              this.showCardList = this.cardList.concat(this.cardList);
+              break;
+          }
+          this.showCardList = JSON.parse(JSON.stringify(this.showCardList));
+          this.showCardList.forEach(item => {
+            item.flipped = false;
+            item.cleared = false;
+          });
+          this.showCardList = this.fisherYatesShuffle(this.showCardList);
+        },
+        /**
+         * 陣列隨機排序
+         * @param {Array} arr 目標陣列
+         * @return {Array}
+         */
+        fisherYatesShuffle(arr) {
+          for (let i = arr.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+          }
+          return arr
+        },
+        /**
+         * 倒數開始
+         */
+        countdownBegins() {
+          this.showCardList.forEach(item => item.flipped = true);
+          this.showStartView = false
+          this.showCountdownView = true
+          const countdown = () => { 
+            this.countdownSec--
+            if (this.countdownSec > 0) setTimeout(countdown, 1000)
+            else this.gameStart()
+          }
+          this.$nextTick(() => {
+            setTimeout(countdown, 1000)
+          })
+        },
+        /**
+         * 遊戲開始
+         */
+        gameStart() {
+          this.canFlip = true
+          this.showCardList.forEach(item => item.flipped = false);
+          this.showCountdownView = false
+          this.timer = setInterval(() => {
+            this.timeLeft--
+          }, 1000);
+        },
+        /**
+         * 翻牌
+         */
+        flipCard(item) {
+          if (this.cardTemp.length < 2 && !item.cleared && this.timeLeft >= 0 && this.canFlip) {
+            this.cardTemp.push(item)
+            item.flipped = true
+          }
+        },
+        /**
+         * 遊戲結束
+         */
+        gameEnd(result) {
+          this.canFlip = false
+          this.gameResult = result
+          this.showEndView = true
+          clearInterval(this.timer)
+        },
+        /**
+         * 再玩一次
+         */
+        playAgain() {
+          this.showEndView = false
+          this.initGame(this.mode)
+          this.$nextTick(() => {
+            setTimeout(this.countdownBegins, 1000);
+          })
+          
+        },
+        /**
+         * 回到初始畫面
+         */
+        back() {
+          this.initGame('simple')
+          this.showEndView = false
+          this.showStartView = true
+        }
+      },
+    });
+
+    vm.mount('#app');
+
+  </script>
+</body>
+
+</html>

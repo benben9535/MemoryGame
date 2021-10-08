@@ -17,37 +17,45 @@
       <div class="popups">
         <div class="title">Memory Game</div>
         <div class="mode-btns">
-          <div :class="mode === 'simple' ? 'actived' : ''" @click="initGame('simple')">Simple</div>
+          <div :class="mode === 'eazy' ? 'actived' : ''" @click="initGame('eazy')">Eazy</div>
           <div :class="mode === 'hard' ? 'actived' : ''" @click="initGame('hard')">Hard</div>
         </div>
         <div class="btn" @click="countdownBegins">Start</div>
       </div>
     </div>
-    <!-- 倒數畫面 -->
-    <div class="mask countdown-mask" v-show="showCountdownView" v-cloak>
-      {{ countdownSec }}
-    </div>
-    <!-- 卡片區塊 -->
-    <div :class="`cards-wrap-${mode}`" v-cloak>
-      <div v-for="(item, index) in showCardList" :key="index" class="card-wrap" @click="flipCard(item)">
-        <div class="card" :class="{'flipped': item.flipped, 'hide': item.cleared}">
-          <div class="front"></div>
-          <div class="back">{{ item.value }}</div>
-        </div>
-      </div>
-    </div>
-    <!-- 時間條 -->
-    <div class="timeBar">
-      <div class="time-left" :style="`width: ${timeLeft / totalSec * 100}%;`"></div>
-    </div>
+
     <!-- 結束畫面 -->
     <div class="mask" v-show="showEndView" v-cloak>
       <div class="popups">
-        <div class="title">{{ gameResult === 'success' ? 'Success!' : 'Fail...' }}</div>
+        <div class="game-result">{{ gameResult === 'success' ? 'You Are Awesome!' : 'Fail...' }}</div>
+        <div v-show="gameResult === 'success'" class="timing">Complete in {{ totalSec - timeLeft }} seconds</div>
         <div class="btn" @click="playAgain">Play Again</div>
         <div class="btn" @click="back">Back</div>
       </div>
     </div>
+
+    <!-- 主遊戲區 -->
+    <div :class="`main-wrap-${mode}`">
+      <!-- 卡片區塊 -->
+      <div class="cards-wrap" v-cloak>
+        <div v-for="(item, index) in showCardList" :key="index" class="card-wrap" @click="flipCard(item)">
+          <div class="card" :class="{'flipped': item.flipped, 'cleared': item.cleared}">
+            <div class="front"></div>
+            <div class="back" :style="`background-image: url(${item.img});`"></div>
+          </div>
+        </div>
+        <!-- 倒數畫面 -->
+        <div class="mask countdown-mask" v-show="showCountdownView" v-cloak>
+          {{ countdownSec }}
+        </div>
+      </div>
+      <!-- 時間條 -->
+      <div class="timeBar">
+        <div class="time-left" :style="timeLeftColor"></div>
+      </div>
+    </div>
+
+
 
   </div>
   <script src="https://unpkg.com/vue@next"></script>
@@ -58,51 +66,51 @@
         return {
           cardList: [{
             value: '001',
-            img: ''
+            img: './image/001.png'
           }, {
             value: '002',
-            img: ''
+            img: './image/002.png'
           }, {
             value: '003',
-            img: ''
+            img: './image/003.png'
           }, {
             value: '004',
-            img: ''
+            img: './image/004.png'
           }, {
             value: '005',
-            img: ''
+            img: './image/005.png'
           }, {
             value: '006',
-            img: ''
+            img: './image/006.png'
           }, {
             value: '007',
-            img: ''
+            img: './image/007.png'
           }, {
             value: '008',
-            img: ''
+            img: './image/008.png'
           }, {
             value: '009',
-            img: ''
+            img: './image/009.png'
           }, {
             value: '010',
-            img: ''
+            img: './image/010.png'
+          }, {
+            value: '011',
+            img: './image/011.png'
           }, {
             value: '012',
-            img: ''
-          }, {
-            value: '012',
-            img: ''
+            img: './image/012.png'
           }],
           showCardList: [],
           showStartView: true,
           showCountdownView: false,
           showEndView: false,
           countdownSec: 5,
-          mode: 'simple',
+          mode: 'eazy',
           cardTemp: [],
           gameResult: '',
-          totalSec: 30,
-          timeLeft: 30,
+          totalSec: 60,
+          timeLeft: 60,
           timer: '',
           canFlip: false
         }
@@ -114,10 +122,21 @@
             if (item.cleared) count++
           })
           return count
+        },
+        timeLeftColor() {
+          let color = ''
+          let percent = this.timeLeft / this.totalSec * 100
+          if (percent > 60) color = '#4ecdc4'
+          else if (percent > 30) color = '#ffe66d'
+          else color = '#ff6b6b'
+          return {
+            width: percent + '%',
+            backgroundColor: color
+          }
         }
       },
       created() {
-        this.initGame('simple');
+        this.initGame('eazy');
       },
       mounted() {
         this.resetViewHeight()
@@ -126,8 +145,8 @@
       },
       watch: {
         cardTemp: {
-          handler: function(cards) {
-            if(cards.length === 2) {
+          handler: function (cards) {
+            if (cards.length === 2) {
               if (cards[0].value === cards[1].value) {
                 setTimeout(() => {
                   this.cardTemp.forEach((item) => item.cleared = true)
@@ -144,7 +163,7 @@
           deep: true
         },
         clearedCount(count) {
-          if ((this.mode === 'simple' && count === 16) || (this.mode === 'hard' && count === 24)) {
+          if ((this.mode === 'eazy' && count === 16) || (this.mode === 'hard' && count === 24)) {
             this.gameEnd('success')
           }
         },
@@ -164,15 +183,15 @@
         },
         /**
          * 遊戲初始化
-         * @param {String} mode 遊戲模式：simple 簡單，hard 困難
+         * @param {String} mode 遊戲模式：eazy 簡單，hard 困難
          */
         initGame(mode) {
           this.mode = mode
           this.countdownSec = 5
-          this.timeLeft = 30
+          this.timeLeft = 60
           this.gameResult = ''
           switch (mode) {
-            case 'simple':
+            case 'eazy':
               this.showCardList = this.cardList.slice(0, 8).concat(this.cardList.slice(0, 8));
               break;
             case 'hard':
@@ -205,7 +224,7 @@
           this.showCardList.forEach(item => item.flipped = true);
           this.showStartView = false
           this.showCountdownView = true
-          const countdown = () => { 
+          const countdown = () => {
             this.countdownSec--
             if (this.countdownSec > 0) setTimeout(countdown, 1000)
             else this.gameStart()
@@ -252,17 +271,17 @@
           this.$nextTick(() => {
             setTimeout(this.countdownBegins, 1000);
           })
-          
+
         },
         /**
          * 回到初始畫面
          */
         back() {
-          this.initGame('simple')
+          this.initGame('eazy')
           this.showEndView = false
           this.showStartView = true
         }
-      },
+      }
     });
 
     vm.mount('#app');

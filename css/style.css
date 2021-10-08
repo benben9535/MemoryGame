@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Geo:ital@1&display=swap");
 [v-cloak] {
   opacity: 0;
 }
@@ -14,9 +15,9 @@ body {
   height: 100vh;
   height: calc(var(--vh) * 100);
   overflow: hidden;
-  background-color: #f3f3f3;
-  background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23bfbfbf' fill-opacity='0.4' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
-  color: #7c7c7c;
+  background-color: #f0efeb;
+  color: #f7fff7;
+  font-family: 'Geo', sans-serif;
 }
 
 #app {
@@ -40,7 +41,7 @@ body {
 .mask {
   width: 100%;
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(0, 0, 0, 0.5);
   position: fixed;
   top: 0;
   left: 0;
@@ -57,8 +58,6 @@ body {
 }
 
 .mask .popups {
-  border: 1px solid gray;
-  border-radius: 5px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -73,10 +72,26 @@ body {
   max-width: 400px;
   padding: 30px 0;
   text-align: center;
+  background-color: #1a535c;
+  -webkit-box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
+          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
 }
 
 .mask .title {
-  font-size: 20px;
+  font-size: 36px;
+  color: #ffe66d;
+  margin-bottom: 10px;
+}
+
+.mask .game-result {
+  font-size: 30px;
+  color: #ffe66d;
+  margin-bottom: 10px;
+}
+
+.mask .timing {
+  font-size: 24px;
+  margin-bottom: 15px;
 }
 
 .mask .mode-btns {
@@ -91,20 +106,22 @@ body {
 }
 
 .mask .mode-btns div {
-  border: 1px solid silver;
+  border: 1px solid #ffe66d;
   display: inline-block;
   width: 45%;
   height: 40px;
   line-height: 40px;
   cursor: pointer;
+  font-size: 20px;
+  color: #ffe66d;
 }
 
 .mask .mode-btns .actived {
-  border: 2px solid silver;
+  background-color: #ffe66d;
+  color: #1a535c;
 }
 
 .mask .btn {
-  border: 1px solid silver;
   display: inline-block;
   width: 90%;
   height: 50px;
@@ -112,19 +129,27 @@ body {
   font-size: 18px;
   cursor: pointer;
   margin-top: 10px;
+  background-color: #4ecdc4;
+  font-size: 24px;
 }
 
 .countdown-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
   background-color: transparent;
   font-size: 140px;
-  color: rgba(255, 255, 255, 0.5);
+  color: #4ecdc4;
 }
 
-.cards-wrap-simple {
-  border: 1px solid blue;
+.main-wrap-eazy {
   width: 90%;
   max-width: 600px;
   margin: 0 auto;
+}
+
+.main-wrap-eazy .cards-wrap {
+  position: relative;
   display: -ms-grid;
   display: grid;
   -ms-grid-columns: (1fr)[4];
@@ -134,11 +159,20 @@ body {
           perspective: 800px;
 }
 
-.cards-wrap-hard {
-  border: 1px solid blue;
+.main-wrap-hard {
   width: 90%;
   max-width: 750px;
   margin: 0 auto;
+}
+
+@media screen and (max-width: 767px) {
+  .main-wrap-hard {
+    width: 80%;
+  }
+}
+
+.main-wrap-hard .cards-wrap {
+  position: relative;
   display: -ms-grid;
   display: grid;
   -ms-grid-columns: (1fr)[6];
@@ -147,8 +181,7 @@ body {
 }
 
 @media screen and (max-width: 767px) {
-  .cards-wrap-hard {
-    width: 75%;
+  .main-wrap-hard .cards-wrap {
     -ms-grid-columns: (1fr)[4];
         grid-template-columns: repeat(4, 1fr);
     gap: 3px;
@@ -156,7 +189,6 @@ body {
 }
 
 .card-wrap {
-  border: 1px solid burlywood;
   padding-bottom: 120%;
   position: relative;
   -webkit-perspective: 800px;
@@ -166,6 +198,8 @@ body {
 .card-wrap .card {
   width: 100%;
   height: 100%;
+  -webkit-box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
   position: absolute;
   -webkit-transform-style: preserve-3d;
           transform-style: preserve-3d;
@@ -181,18 +215,23 @@ body {
   height: 100%;
   -webkit-backface-visibility: hidden;
           backface-visibility: hidden;
+  border-radius: 3px;
 }
 
 .card-wrap .card .front {
-  background-color: cadetblue;
-  background-image: -webkit-gradient(linear, left top, left bottom, from(#f1cdcd), to(#f5ccaa));
-  background-image: linear-gradient(#f1cdcd, #f5ccaa);
+  background-image: url("../image/pokemon.png"), linear-gradient(45deg, #ffd23f 33%, #ffe66d 33%, #ffe66d 66%, #ffd23f 66%);
+  background-size: 90%, 100%;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .card-wrap .card .back {
   -webkit-transform: rotateY(180deg);
           transform: rotateY(180deg);
-  background-color: #cce0e0;
+  background-color: #f7fff7;
+  background-size: 85%;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .card-wrap .card.flipped {
@@ -200,19 +239,52 @@ body {
           transform: rotateY(180deg);
 }
 
-.card-wrap .card.hide {
-  opacity: 0;
+.card-wrap .card.cleared {
+  -webkit-box-shadow: none;
+          box-shadow: none;
+  -webkit-animation: cleared .3s;
+          animation: cleared .3s;
+}
+
+@-webkit-keyframes cleared {
+  0% {
+    -webkit-transform: scale(1) rotateY(180deg);
+            transform: scale(1) rotateY(180deg);
+  }
+  70% {
+    -webkit-transform: scale(1.1) rotateY(180deg);
+            transform: scale(1.1) rotateY(180deg);
+  }
+  100% {
+    -webkit-transform: scale(1) rotateY(180deg);
+            transform: scale(1) rotateY(180deg);
+  }
+}
+
+@keyframes cleared {
+  0% {
+    -webkit-transform: scale(1) rotateY(180deg);
+            transform: scale(1) rotateY(180deg);
+  }
+  70% {
+    -webkit-transform: scale(1.1) rotateY(180deg);
+            transform: scale(1.1) rotateY(180deg);
+  }
+  100% {
+    -webkit-transform: scale(1) rotateY(180deg);
+            transform: scale(1) rotateY(180deg);
+  }
 }
 
 .timeBar {
-  border: 1px solid gray;
+  -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
   border-radius: 15px;
   margin-top: 30px;
   display: inline-block;
   position: relative;
-  width: 90%;
-  max-width: 1000px;
-  height: 10px;
+  width: 100%;
+  height: 15px;
 }
 
 .timeBar .time-left {
@@ -221,7 +293,7 @@ body {
   left: 0;
   top: 0;
   height: 100%;
-  background-color: rgba(247, 149, 119, 0.938);
+  background-color: #4ecdc4;
   -webkit-transition: all 1s linear;
   transition: all 1s linear;
 }

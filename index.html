@@ -153,15 +153,18 @@
         cardTemp: {
           handler: function (cards) {
             if (cards.length === 2) {
+              this.canFlip = false
               if (cards[0].value === cards[1].value) {
                 setTimeout(() => {
                   this.cardTemp.forEach((item) => item.cleared = true)
                   this.cardTemp = []
+                  this.canFlip = true
                 }, 800)
               } else {
                 setTimeout(() => {
                   this.cardTemp.forEach((item) => item.flipped = false)
                   this.cardTemp = []
+                  this.canFlip = true
                 }, 800)
               }
             }
@@ -254,7 +257,7 @@
          * 翻牌
          */
         flipCard(item) {
-          if (this.cardTemp.length < 2 && !item.cleared && this.timeLeft >= 0 && this.canFlip) {
+          if (this.cardTemp.length < 2 && !item.cleared && !item.flipped && this.timeLeft >= 0 && this.canFlip) {
             this.cardTemp.push(item)
             item.flipped = true
           }

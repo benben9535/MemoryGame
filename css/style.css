@@ -5,6 +5,7 @@
 * {
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 body {
@@ -234,11 +235,13 @@ body {
 }
 
 .card-wrap .card.flipped {
-  -webkit-transform: rotateY(180deg);
-          transform: rotateY(180deg);
+  -webkit-transform: scale(1) rotateY(180deg);
+          transform: scale(1) rotateY(180deg);
 }
 
 .card-wrap .card.cleared {
+  -webkit-transform: scale(1) rotateY(180deg);
+          transform: scale(1) rotateY(180deg);
   -webkit-box-shadow: none;
           box-shadow: none;
   -webkit-animation: cleared 0.3s cubic-bezier(0.17, 0.67, 0.86, 1.42);

@@ -4,6 +4,8 @@
 }
 * {
   box-sizing: border-box;
+  // 防止iOS手機瀏覽器click時閃爍
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 body {
   margin: 0;
@@ -177,9 +179,10 @@ body {
       background-position: center;
     }
     &.flipped {
-      transform: rotateY(180deg);
+      transform: scale(1) rotateY(180deg);
     }
     &.cleared {
+      transform: scale(1) rotateY(180deg);
       box-shadow: none;
       animation: cleared .3s cubic-bezier(.17,.67,.86,1.42);
     }

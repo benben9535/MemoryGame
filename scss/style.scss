@@ -179,10 +179,9 @@ body {
       background-position: center;
     }
     &.flipped {
-      transform: scale(1) rotateY(180deg);
+      transform: rotateY(180deg);
     }
     &.cleared {
-      transform: scale(1) rotateY(180deg);
       box-shadow: none;
       animation: cleared .3s cubic-bezier(.17,.67,.86,1.42);
     }

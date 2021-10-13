@@ -66,7 +66,7 @@
   </div>
   <script src="https://unpkg.com/vue@next"></script>
   <script>
-    const { createApp, ref } = Vue;
+    const { createApp, ref } = Vue
     const vm = createApp({
       data() {
         return {
@@ -107,29 +107,29 @@
             value: '012',
             img: './image/012.png'
           }],
-          showCardList: [],
-          showStartView: true,
-          showCountdownView: false,
-          showEndView: false,
-          countdownSec: 5,
-          mode: 'eazy',
-          cardTemp: [],
-          gameResult: '',
-          totalSec: 60,
-          timeLeft: 60,
-          timer: '',
-          canFlip: false
+          showCardList: [], // 顯示於畫面的卡牌陣列
+          showStartView: true, // 是否顯示初始畫面
+          showCountdownView: false, // 是否顯示倒數畫面
+          showEndView: false, // 是否顯示結束畫面
+          countdownSec: 5, // 記憶時間倒數
+          mode: 'eazy', // 遊戲模式 eazy：簡單(16張牌)，hard：困難(24張牌)
+          cardTemp: [], // 翻牌暫存
+          gameResult: '', // 遊戲結果 success：成功，fail：失敗
+          totalSec: 60, // 遊戲總時間
+          timeLeft: 60, // 遊戲剩餘時間
+          timer: '', // 遊戲時間計時器
+          canFlip: false // 是否可以翻牌
         }
       },
       computed: {
-        clearedCount() {
+        clearedCount() { // 已完成的翻牌數量
           let count = 0
           this.showCardList.forEach((item) => {
             if (item.cleared) count++
           })
           return count
         },
-        timeLeftColor() {
+        timeLeftColor() { // 時間條寬度及顏色
           let color = ''
           let percent = this.timeLeft / this.totalSec * 100
           if (percent > 60) color = '#4ecdc4'
@@ -142,26 +142,26 @@
         }
       },
       created() {
-        this.initGame('eazy');
+        this.initGame('eazy')
       },
       mounted() {
         this.resetViewHeight()
         // 當螢幕尺寸產生變化時 重新取得vh
-        window.addEventListener('resize', this.resetViewHeight);
+        window.addEventListener('resize', this.resetViewHeight)
       },
       watch: {
         cardTemp: {
           handler: function (cards) {
-            if (cards.length === 2) {
+            if (cards.length === 2) { // 當使用者翻了兩張牌時
               this.canFlip = false
-              if (cards[0].value === cards[1].value) {
+              if (cards[0].value === cards[1].value) { // 兩張是相同的，則紀錄該牌已成功，並清空暫存
                 setTimeout(() => {
                   this.cardTemp.forEach((item) => item.cleared = true)
                   this.cardTemp = []
                   this.canFlip = true
                 }, 800)
               } else {
-                setTimeout(() => {
+                setTimeout(() => { // 兩張是不同的，則翻回背面，並清空暫存
                   this.cardTemp.forEach((item) => item.flipped = false)
                   this.cardTemp = []
                   this.canFlip = true
@@ -171,12 +171,12 @@
           },
           deep: true
         },
-        clearedCount(count) {
+        clearedCount(count) { // 監聽已成功的卡牌數量，達成條件時結束遊戲
           if ((this.mode === 'eazy' && count === 16) || (this.mode === 'hard' && count === 24)) {
             this.gameEnd('success')
           }
         },
-        timeLeft(sec) {
+        timeLeft(sec) { // 監聽剩餘時間，時間到時結束遊戲
           if (sec === -1) {
             this.gameEnd('fail')
           }
@@ -187,8 +187,8 @@
          * 解決safari vh判定異常 - 用js取得瀏覽器高度後 填入CSS變數內
          */
         resetViewHeight() {
-          const vh = window.innerHeight * 0.01;
-          document.documentElement.style.setProperty('--vh', `${vh}px`);
+          const vh = window.innerHeight * 0.01
+          document.documentElement.style.setProperty('--vh', `${vh}px`)
         },
         /**
          * 遊戲初始化
@@ -201,18 +201,18 @@
           this.gameResult = ''
           switch (mode) {
             case 'eazy':
-              this.showCardList = this.cardList.slice(0, 8).concat(this.cardList.slice(0, 8));
-              break;
+              this.showCardList = this.cardList.slice(0, 8).concat(this.cardList.slice(0, 8))
+              break
             case 'hard':
-              this.showCardList = this.cardList.concat(this.cardList);
-              break;
+              this.showCardList = this.cardList.concat(this.cardList)
+              break
           }
-          this.showCardList = JSON.parse(JSON.stringify(this.showCardList));
+          this.showCardList = JSON.parse(JSON.stringify(this.showCardList))
           this.showCardList.forEach(item => {
-            item.flipped = false;
-            item.cleared = false;
-          });
-          this.showCardList = this.fisherYatesShuffle(this.showCardList);
+            item.flipped = false
+            item.cleared = false
+          })
+          this.showCardList = this.fisherYatesShuffle(this.showCardList)
         },
         /**
          * 陣列隨機排序
@@ -221,8 +221,8 @@
          */
         fisherYatesShuffle(arr) {
           for (let i = arr.length - 1; i > 0; i--) {
-            let j = Math.floor(Math.random() * (i + 1));
-            [arr[i], arr[j]] = [arr[j], arr[i]];
+            let j = Math.floor(Math.random() * (i + 1))
+            ;[arr[i], arr[j]] = [arr[j], arr[i]]
           }
           return arr
         },
@@ -230,7 +230,7 @@
          * 倒數開始
          */
         countdownBegins() {
-          this.showCardList.forEach(item => item.flipped = true);
+          this.showCardList.forEach(item => item.flipped = true)
           this.showStartView = false
           this.showCountdownView = true
           const countdown = () => {
@@ -247,14 +247,15 @@
          */
         gameStart() {
           this.canFlip = true
-          this.showCardList.forEach(item => item.flipped = false);
+          this.showCardList.forEach(item => item.flipped = false)
           this.showCountdownView = false
           this.timer = setInterval(() => {
             this.timeLeft--
-          }, 1000);
+          }, 1000)
         },
         /**
          * 翻牌
+         * @param {Object} item 目標卡牌
          */
         flipCard(item) {
           if (this.cardTemp.length < 2 && !item.cleared && !item.flipped && this.timeLeft >= 0 && this.canFlip) {
@@ -264,6 +265,7 @@
         },
         /**
          * 遊戲結束
+         * @param {String} result 遊戲結果：success 成功，fail 失敗
          */
         gameEnd(result) {
           this.canFlip = false
@@ -278,7 +280,7 @@
           this.showEndView = false
           this.initGame(this.mode)
           this.$nextTick(() => {
-            setTimeout(this.countdownBegins, 1000);
+            setTimeout(this.countdownBegins, 1000)
           })
 
         },
@@ -291,9 +293,9 @@
           this.showStartView = true
         }
       }
-    });
+    })
 
-    vm.mount('#app');
+    vm.mount('#app')
 
   </script>
 </body>
